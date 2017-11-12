@@ -8,6 +8,10 @@ function predict() {
     authStuff();
 }
 
+// tWait 
+// tTalk
+// tHeld
+
 let authStuff = async () => {
 
     let it = document.getElementById("interactionType");
