@@ -6,7 +6,7 @@ redirectUri = 'https://localhost:3000/' // encodeURIComponent(window.location.hr
 
 
 
-let authStuff = () => {
+let authStuff = async () => {
     let body = `
     {
         "interval": "2017-10-11T04:00:00.000Z/2017-11-12T05:00:00.000Z",
@@ -16,11 +16,10 @@ let authStuff = () => {
        }
     `;
 
-    client.postAnalyticsConversationsAggregatesQuery(body)
-    .then(data => {
-        console.log(data);
-    })
+    var apiInstance = new platformClient.AnalyticsApi();
 
+    let data = await apiInstance.postAnalyticsConversationsAggregatesQuery(body);
+    console.log(data);
 }
 
 
@@ -28,7 +27,7 @@ let authStuff = () => {
 client.loginImplicitGrant(clientId, redirectUri)
     .then(function () {
         alert('I am auth');
-        authStuff(client);
+        authStuff();
     })
     .catch(function (response) {
         console.log(`${response.status} - ${response.error.message}`);
