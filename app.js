@@ -121,37 +121,48 @@ let authStuff = async () => {
         })
         .then(response => response.json())
         .then(data => {
+            console.log(data);
 
-            let avg = (data.max[0] - data.min[0])/2;
+            for (let stat in data) {
+                if (data.hasOwnProperty(stat)) {
+                    // TODO; replace static metric
+                    let value = data[stat];
+                    let values = JSON.parse(localStorage.getItem(metricList[index]));
 
-            let values = JSON.parse(localStorage.getItem('Wait Time'));
+                    let bad = parseInt(values.max);
+                    let good = parseInt(values.min);
 
-            console.log('**********')
-            console.log(avg);
-            console.log(values.max);
-            console.log(values.min);
-            console.log('**********')
-
-            let bad = parseInt(values.max);
-            let good = parseInt(values.min);
-
-            if (bad<good) {
-                if (data) {
-                    
+                    if (bad < good) {
+                        if (value < bad) {
+                            cards[index].children[2].innerHTML =`<div>Next Date: <div class="circle circle-red"></div> </div>`;
+                        } else if (value > good) {
+                            cards[index].children[2].innerHTML =`<div>Next Date: <div class="circle circle-green"></div> </div>`;
+                        } else {
+                            if ((value - bad) / (good - bad) < 0.25) {
+                                cards[index].children[2].innerHTML =`<div>Next Date: <div class="circle circle-red"></div> </div>`;
+                            } else if ((value - bad) / (good - bad) < 0.75) {
+                                cards[index].children[2].innerHTML =`<div>Next Date: <div class="circle circle-yellow"></div> </div>`;
+                            } else {
+                                cards[index].children[2].innerHTML =`<div>Next Date: <div class="circle circle-green"></div> </div>`;
+                            }
+                        }
+                    } else {
+                        if (value < good) {
+                            cards[index].children[2].innerHTML =`<div>Next Date: <div class="circle circle-green"></div> </div>`;
+                        } else if (value > bad) {
+                            cards[index].children[2].innerHTML =`<div>Next Date: <div class="circle circle-red"></div> </div>`;
+                        } else {
+                            if ((value - good) / (bad - good) < 0.25) {
+                                cards[index].children[2].innerHTML =`<div>Next Date: <div class="circle circle-green"></div> </div>`;
+                            } else if ((value - good) / (bad - good) < 0.75) {
+                                cards[index].children[2].innerHTML =`<div>Next Date: <div class="circle circle-yellow"></div> </div>`;
+                            } else {
+                                cards[index].children[2].innerHTML =`<div>Next Date: <div class="circle circle-red"></div> </div>`;
+                            }
+                        }
+                    }
                 }
-            } else {
-                
             }
-            
-            // if (avg >= parseInt(values.max)) {
-            //     cards[index].children[2].innerHTML =`<div>Next Date: <div class="circle circle-red"></div> </div>`;
-            // }
-            // else if (avg <= parseInt(values.min)) {
-            //     cards[index].children[2].innerHTML =`<div>Next Date: <div class="circle circle-green"></div> </div>`;
-            // }
-            // else{
-            //     cards[index].children[2].innerHTML =`<div>Next Date: <div class="circle circle-yellow"></div> </div>`;
-            // }
         })
         .catch(err => console.log(err));
 
@@ -167,7 +178,7 @@ client.loginImplicitGrant(clientId, redirectUri)
         //authStuff();
         new platformClient.UsersApi().getUsersMe()
             .then(function(data) {
-                if (data.id === 'f00c71de-edce-46b9-bc41-6692b3b3cc4b') {
+                if (data.id === '00c71de-edce-46b9-bc41-6692b3b3cc4b') {
                     document.getElementById('predict-selection').style.display = 'none';
                     document.getElementById('metrics-prediction').style.display = 'none';
                 } else {
@@ -194,8 +205,7 @@ client.loginImplicitGrant(clientId, redirectUri)
         if (elements.hasOwnProperty(node)) {
             const element = elements[node];
             element.addEventListener('click', (event) => {
-                let settingText = event.target.parentElement.previousElementSibling.children[0].textContent;
-                currentSetting = settingText;
+                currentSetting = event.target.id;
                 document.querySelector('.modal-title').innerHTML = currentSetting;
 
                 $('#modal').modal('toggle');
