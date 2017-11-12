@@ -85,6 +85,19 @@ client.loginImplicitGrant(clientId, redirectUri)
     .then(function () {
         //alert('I am auth');
         //authStuff();
+        new platformClient.UsersApi().getUsersMe()
+            .then(function(data) {
+                if (data.id === 'f00c71de-edce-46b9-bc41-6692b3b3cc4b') {
+                    document.getElementById('predict-selection').style.display = 'none';
+                    document.getElementById('metrics-prediction').style.display = 'none';
+                } else {
+                    document.getElementById('prediction-summary').style.display = 'none';
+                }
+            })
+            .catch(function(error) {
+                console.log('There was a failure calling getUsersMe');
+                console.error(error);
+            });
     })
     .catch(function (response) {
         console.log(`${response.status} - ${response.error.message}`);
