@@ -8,20 +8,17 @@ function predict() {
     authStuff();
 }
 
-// tWait 
-// tTalk
-// tHeld
 
 let authStuff = async () => {
 
     let it = document.getElementById("interactionType");
     let interactionType = it.options[it.selectedIndex].value;
 
-    let m = document.getElementById("metric");
-    let metric = m.options[m.selectedIndex].value;
+    // let m = document.getElementById("metric");
+    // let metric = m.options[m.selectedIndex].value;
+    let metricList = ['tWait', 'tTalk', 'tHeld'];
 
     console.log(interactionType);
-    console.log(metric);
 
     let body = `
     {
@@ -37,48 +34,70 @@ let authStuff = async () => {
     let data = await apiInstance.postAnalyticsConversationsAggregatesQuery(body);
     console.log(data);
 
+
     let json = {};
-    let dataObj = {};
+    let dataObjArr = [];
+
+    let dataObj = [];
+    let dataObjtWait = {};
+    let dataObjtTalk = {};
+    let dataObjtHeld = {};
+
 
     let mediaTypeData = data.results.filter(function (item) {
         return item.group.mediaType === interactionType;
-    })[0].data;
-    console.log(mediaTypeData);
-    mediaTypeData.forEach(element => {
-        let keyDate = element.interval.split('/')[0];
-        console.log(element);
+    })[0].data;json();
 
-        let valueStats = element.metrics.filter(function (item) {
-            return item.metric === metric;
+    metricList.forEach(metric => {
+        mediaTypeData.forEach((element, index) => {
+            let keyDate = element.interval.split('/')[0];
+
+            let valueStats = element.metrics.filter(function (item) {
+                return item.metric === metric;
+            });
+            if (valueStats.length > 0) {
+                valueStats = valueStats[0].stats;
+                if (index == 0) {
+                    dataObjtWait[keyDate] = valueStats;
+                }
+                else if (index == 1) {
+                    dataObjtTalk[keyDate] = valueStats;
+                }
+                else if (index == 2) {
+                    dataObjtHeld[keyDate] = valueStats;
+                }
+                // dataObj[keyDate] = valueStats;
+            }
         });
-        if (valueStats.length > 0) {
-            valueStats = valueStats[0].stats;
-            dataObj[keyDate] = valueStats;
-        }
     });
 
-    json['data'] = dataObj;
-    json['predictDays'] = 1;
-    json['politeMode'] = 'please';
+    dataObj.push(dataObjtWait, dataObjtTalk, dataObjtHeld);
 
-    console.log(JSON.stringify(json));
 
     let url = 'https://ccforecast.herokuapp.com/predictPlease';
 
-    fetch(url, {
-        method: 'post',
-        headers: {
-            "Content-type": "application/json; charset=UTF-8"
-        },
-        body: JSON.stringify(json)
-    })
-        .then(json)
-        .then(function (data) {
-            console.log('Request succeeded with JSON response', data);
+    dataObj.forEach(data => {
+        fetch(url, {
+            method: 'post',
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            },
+            body: JSON.stringify({
+                'data': data,
+                'predictDays': 1,
+                'politeMode': 'please'
+            })
         })
-        .catch(function (error) {
-            console.log('Request failed', error);
-        });
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+        })
+        .catch(err => console.log(err));
+
+    });
+
+
+
 }
 
 client.loginImplicitGrant(clientId, redirectUri)
@@ -95,7 +114,7 @@ client.loginImplicitGrant(clientId, redirectUri)
 
 (() => {
     let elements = document.querySelectorAll('.card-link');
-    let currentSetting ='';
+    let currentSetting = '';
 
     for (const node in elements) {
         if (elements.hasOwnProperty(node)) {
@@ -103,7 +122,7 @@ client.loginImplicitGrant(clientId, redirectUri)
             element.addEventListener('click', (event) => {
                 let settingText = event.target.parentElement.previousElementSibling.children[0].textContent;
                 currentSetting = settingText;
-                document.querySelector('.modal-title').innerHTML=currentSetting;
+                document.querySelector('.modal-title').innerHTML = currentSetting;
 
                 $('#modal').modal('toggle');
                 return false;
@@ -111,11 +130,11 @@ client.loginImplicitGrant(clientId, redirectUri)
         }
     }
 
-    document.querySelector('.modal-footer .btn-primary').addEventListener('click', ()=>{
+    document.querySelector('.modal-footer .btn-primary').addEventListener('click', () => {
         console.log(currentSetting);
         let values = document.querySelectorAll('.form-row .col .form-control');
-        
-        localStorage.setItem(currentSetting, JSON.stringify({min: values[0].value, max: values[1].value}))
+
+        localStorage.setItem(currentSetting, JSON.stringify({ min: values[0].value, max: values[1].value }))
 
         values[0].value = '';
         values[1].value = '';
