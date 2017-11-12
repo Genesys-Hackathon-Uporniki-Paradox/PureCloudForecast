@@ -2,7 +2,7 @@ const platformClient = require('platformClient');
 var client = platformClient.ApiClient.instance;
 //client.setPersistSettings(true, 'optional_prefix');
 var clientId = '1a469bb5-7bb7-4fa7-bf4e-6e90191223a8';
-redirectUri = 'https://localhost:3000/' // encodeURIComponent(window.location.href);
+redirectUri = encodeURIComponent(window.location.href);
 
 function predict() {
     authStuff();
