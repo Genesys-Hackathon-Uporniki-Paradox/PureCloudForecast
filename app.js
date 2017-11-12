@@ -75,8 +75,9 @@ let authStuff = async () => {
 
 
     let url = 'https://ccforecast.herokuapp.com/predictPlease';
+    let cards = document.querySelectorAll('.card');
 
-    dataObj.forEach(data => {
+    dataObj.forEach((data, index) => {
         fetch(url, {
             method: 'post',
             headers: {
@@ -90,7 +91,37 @@ let authStuff = async () => {
         })
         .then(response => response.json())
         .then(data => {
-            console.log(data)
+
+            let avg = (data.max[0] - data.min[0])/2;
+
+            let values = JSON.parse(localStorage.getItem('Wait Time'));
+
+            console.log('**********')
+            console.log(avg);
+            console.log(values.max);
+            console.log(values.min);
+            console.log('**********')
+
+            let bad = parseInt(values.max);
+            let good = parseInt(values.min);
+
+            if (bad<good) {
+                if (data) {
+                    
+                }
+            } else {
+                
+            }
+            
+            // if (avg >= parseInt(values.max)) {
+            //     cards[index].children[2].innerHTML =`<div>Next Date: <div class="circle circle-red"></div> </div>`;
+            // }
+            // else if (avg <= parseInt(values.min)) {
+            //     cards[index].children[2].innerHTML =`<div>Next Date: <div class="circle circle-green"></div> </div>`;
+            // }
+            // else{
+            //     cards[index].children[2].innerHTML =`<div>Next Date: <div class="circle circle-yellow"></div> </div>`;
+            // }
         })
         .catch(err => console.log(err));
 

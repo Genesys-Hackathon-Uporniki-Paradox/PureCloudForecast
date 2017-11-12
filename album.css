@@ -56,4 +56,23 @@ body {
   footer p {
     margin-bottom: .25rem;
   }
-  
+
+.circle{
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  -webkit-border-radius: 25px;
+  -moz-border-radius: 25px;
+  border-radius: 25px;
+}
+.circle-red {
+  background: #FF0000;
+}
+
+.circle-green {
+  background: #77DD22;
+}
+
+.circle-yellow {
+  background: #FFDA17 ;
+}
