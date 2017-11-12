@@ -20,13 +20,54 @@ let authStuff = async () => {
 
     let data = await apiInstance.postAnalyticsConversationsAggregatesQuery(body);
     console.log(data);
+
+    let json = {};
+    let dataObj = {};
+
+    let mediaTypeData = data.results.filter(function(item){
+         return item.group.mediaType === 'email';
+      })[0].data;
+
+    mediaTypeData.forEach(element => {
+        let keyDate = element.interval.split('/')[0];
+        console.log(element);
+
+        let valueStats = element.metrics.filter(function(item){
+            return item.metric === 'tWait';
+        })[0].stats;
+        dataObj[keyDate] = valueStats;        
+        
+    });
+
+    json['data'] = dataObj;
+    json['predictDays'] = 7;
+    json['politeMode'] = 'please';
+    
+    let url = 'http://localhost:8000/predictPlease';
+    
+    fetch(url, {
+        method: 'post',
+        headers: {
+          "Content-type": "application/json; charset=UTF-8"
+        },
+        body: json
+      })
+      .then(json)
+      .then(function (data) {
+        console.log('Request succeeded with JSON response', data);
+      })
+      .catch(function (error) {
+        console.log('Request failed', error);
+      });
+
+    
 }
 
 
 
 client.loginImplicitGrant(clientId, redirectUri)
     .then(function () {
-        alert('I am auth');
+        //alert('I am auth');
         authStuff();
     })
     .catch(function (response) {
