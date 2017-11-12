@@ -1,5 +1,7 @@
 /* over ride bootstrap */
-
+body{
+    font-family: “HelveticaNeue”, “Helvetica”, “Arial”, sans-serif;
+}
 
 .bg-dark{
     color: #4C4C4C !important;

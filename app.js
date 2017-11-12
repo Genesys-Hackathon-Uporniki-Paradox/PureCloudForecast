@@ -46,7 +46,7 @@ let authStuff = async () => {
 
     let mediaTypeData = data.results.filter(function (item) {
         return item.group.mediaType === interactionType;
-    })[0].data;json();
+    })[0].data;
 
     metricList.forEach(metric => {
         mediaTypeData.forEach((element, index) => {
