@@ -1,0 +1,14 @@
+/* over ride bootstrap */
+
+
+.bg-dark{
+    color: #4C4C4C !important;
+}
+
+.btn-primary{
+    background-color: #1997CA;    
+}
+
+.album{
+    background-color: #F6F6F6;    
+}
