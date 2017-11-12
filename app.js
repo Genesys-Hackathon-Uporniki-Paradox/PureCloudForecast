@@ -16,7 +16,7 @@ let authStuff = async () => {
 
     // let m = document.getElementById("metric");
     // let metric = m.options[m.selectedIndex].value;
-    let metricList = ['tWait', 'tTalk', 'tHeld'];
+    let metricList = ['tWait', 'tTalk', 'tHandle'];
 
     console.log(interactionType);
 
@@ -47,9 +47,11 @@ let authStuff = async () => {
     let mediaTypeData = data.results.filter(function (item) {
         return item.group.mediaType === interactionType;
     })[0].data;
+    console.log('mediaTypeData');
+    console.log(mediaTypeData);
 
-    metricList.forEach(metric => {
-        mediaTypeData.forEach((element, index) => {
+    metricList.forEach((metric,index) => {
+        mediaTypeData.forEach((element) => {
             let keyDate = element.interval.split('/')[0];
 
             let valueStats = element.metrics.filter(function (item) {
@@ -57,22 +59,50 @@ let authStuff = async () => {
             });
             if (valueStats.length > 0) {
                 valueStats = valueStats[0].stats;
-                if (index == 0) {
-                    dataObjtWait[keyDate] = valueStats;
+                if(keyDate==='2017-11-11T04:00:00.000Z') {
+
+                    let d = new Date();
+                    d = Date.parse(keyDate);
+            
+                    for (var i = 0; i < 7; i++) {
+                        let dd = d - i * 86400000;
+                        //console.log(new Date(dd).toISOString());
+                        element.metrics.forEach(function (el) {
+                            let stats = {};
+                            //console.log(el.metric);
+                            let keys = Object.keys(el.stats);
+                            let random = (Math.random() * 0.4) + 0.8;
+                            keys.forEach((elem) => {
+                                //console.log(elem + ' - ' + el.stats[elem]);
+                                let val = el.stats[elem] * random;
+                                val = Math.ceil(val);
+                                if(elem!=='ratio' && elem!=='numerator' && elem!=='denominator')
+                                    stats[elem] = val;
+                            });
+
+                            if (index == 0) {
+                                dataObjtWait[new Date(dd).toISOString()] = stats;
+                            }
+                            else if (index == 1) {
+                                dataObjtTalk[new Date(dd).toISOString()] = stats;
+                            }
+                            else if (index == 2) {
+                                dataObjtHeld[new Date(dd).toISOString()] = stats;
+                            }
+                        });
+                    }
+
+                    
                 }
-                else if (index == 1) {
-                    dataObjtTalk[keyDate] = valueStats;
-                }
-                else if (index == 2) {
-                    dataObjtHeld[keyDate] = valueStats;
-                }
+                
                 // dataObj[keyDate] = valueStats;
             }
         });
     });
 
     dataObj.push(dataObjtWait, dataObjtTalk, dataObjtHeld);
-
+    console.log('dataObj');
+    console.log(dataObj);
 
     let url = 'https://ccforecast.herokuapp.com/predictPlease';
 
