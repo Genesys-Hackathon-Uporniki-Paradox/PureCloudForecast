@@ -63,19 +63,24 @@
                 <p class="lead text-muted">Something short and leading about the collection below—its contents, the creator, etc. Make it short and
                     sweet, but not too short so folks don't simply skip over it entirely.</p>
                 <p>
-                    <select class="custom-select">
-                        <option selected>Open this select menu</option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
+                    <select class="custom-select" id="interactionType">
+                        <option selected>Please select interaction type</option>
+                        <option value="email">Email</option>
+                        <option value="voice">Voice</option>
+                        <option value="chat">Chat</option>
                     </select>
-                    <select class="custom-select">
-                        <option selected>Open this select menu</option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
+                    <br/>
+                    <br/>
+                    <select class="custom-select" id="metric">
+                        <option selected>Please select metric</option>
+                        <option value="tWait">The amount of time a party waited</option>
+                        <option value="tTalk">Talk time</option>
+                        <option value="tHeld">The amount of time an interaction was placed on hold</option>
                     </select>
 
+                    <br/>
+                    <br/>
+                    <button onclick="predict()">Predict!</button>
                 </p>
             </div>
         </section>
