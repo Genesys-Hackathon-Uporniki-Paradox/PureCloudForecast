@@ -4,7 +4,7 @@ var client = platformClient.ApiClient.instance;
 var clientId = '1a469bb5-7bb7-4fa7-bf4e-6e90191223a8';
 redirectUri = 'https://localhost:3000/' // encodeURIComponent(window.location.href);
 
-function predict(){
+function predict() {
     authStuff();
 }
 
@@ -36,21 +36,21 @@ let authStuff = async () => {
     let json = {};
     let dataObj = {};
 
-    let mediaTypeData = data.results.filter(function(item){
-         return item.group.mediaType === interactionType;
-      })[0].data;
+    let mediaTypeData = data.results.filter(function (item) {
+        return item.group.mediaType === interactionType;
+    })[0].data;
     console.log(mediaTypeData);
     mediaTypeData.forEach(element => {
         let keyDate = element.interval.split('/')[0];
         console.log(element);
 
-        let valueStats = element.metrics.filter(function(item){
+        let valueStats = element.metrics.filter(function (item) {
             return item.metric === metric;
         });
-        if(valueStats.length > 0) {
+        if (valueStats.length > 0) {
             valueStats = valueStats[0].stats;
             dataObj[keyDate] = valueStats;
-        }        
+        }
     });
 
     json['data'] = dataObj;
@@ -58,23 +58,23 @@ let authStuff = async () => {
     json['politeMode'] = 'please';
 
     console.log(JSON.stringify(json));
-    
+
     let url = 'https://ccforecast.herokuapp.com/predictPlease';
-    
+
     fetch(url, {
         method: 'post',
         headers: {
-          "Content-type": "application/json; charset=UTF-8"
+            "Content-type": "application/json; charset=UTF-8"
         },
         body: JSON.stringify(json)
-      })
-      .then(json)
-      .then(function (data) {
-        console.log('Request succeeded with JSON response', data);
-      })
-      .catch(function (error) {
-        console.log('Request failed', error);
-      });
+    })
+        .then(json)
+        .then(function (data) {
+            console.log('Request succeeded with JSON response', data);
+        })
+        .catch(function (error) {
+            console.log('Request failed', error);
+        });
 }
 
 client.loginImplicitGrant(clientId, redirectUri)
@@ -89,23 +89,33 @@ client.loginImplicitGrant(clientId, redirectUri)
 
 
 
-// let data = fetch('https://ccforecast.herokuapp.com/')
-//     .then(
-//     response => {
-//         if (response.status !== 200) {
-//             console.log('Looks like there was a problem. Status Code: ' +
-//                 response.status);
-//             return;
-//         }
+(() => {
+    let elements = document.querySelectorAll('.card-link');
+    let currentSetting ='';
 
-//         // Examine the text in the response
-//         response.json().then(data => {
-//             console.log(data);
-//             let paragraph = document.getElementById("data");
-//             paragraph.innerHTML = data.success;
-//         });
-//     }
-//     )
-//     .catch(err => {
-//         console.log('Fetch Error :-S', err);
-//     });
+    for (const node in elements) {
+        if (elements.hasOwnProperty(node)) {
+            const element = elements[node];
+            element.addEventListener('click', (event) => {
+                let settingText = event.target.parentElement.previousElementSibling.children[0].textContent;
+                currentSetting = settingText;
+                document.querySelector('.modal-title').innerHTML=currentSetting;
+
+                $('#modal').modal('toggle');
+                return false;
+            }, false);
+        }
+    }
+
+    document.querySelector('.modal-footer .btn-primary').addEventListener('click', ()=>{
+        console.log(currentSetting);
+        let values = document.querySelectorAll('.form-row .col .form-control');
+        
+        localStorage.setItem(currentSetting, JSON.stringify({min: values[0].value, max: values[1].value}))
+
+        values[0].value = '';
+        values[1].value = '';
+        $('#modal').modal('toggle');
+    }, false);
+
+})()
